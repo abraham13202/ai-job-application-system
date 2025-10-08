@@ -451,7 +451,7 @@ If this tool helped you land a job, please:
 
 - **Issues**: [GitHub Issues](https://github.com/abraham13202/ai-job-application-system/issues)
 - **Questions**: [GitHub Discussions](https://github.com/abraham13202/ai-job-application-system/discussions)
-- **Email**: abraham.kuriakose@example.com
+- **Email**: abrahamkuriakosevit@gmail.com
 
 ---
 
@@ -469,3 +469,4 @@ If this tool helped you land a job, please:
 - [FAQ](#-faq)
 - [Contributing](CONTRIBUTING.md)
 - [License](LICENSE)
+
