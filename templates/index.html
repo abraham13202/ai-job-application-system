@@ -440,6 +440,116 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+
+        .modal-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-tab-content {
+            display: none;
+        }
+
+        .modal-tab-content.active {
+            display: block;
+        }
+
+        .document-content {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
@@ -461,6 +571,15 @@
             .btn {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .modal {
+                padding: 0;
+            }
+
+            .modal-content {
+                max-height: 100vh;
+                border-radius: 0;
             }
         }
     </style>
@@ -587,6 +706,28 @@
             <div class="loading">
                 <div class="loading-spinner"></div>
                 <p>Loading jobs...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for viewing application details -->
+    <div class="modal" id="applicationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Application Details</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchTab('resume')">Resume</button>
+                    <button class="modal-tab" onclick="switchTab('cover')">Cover Letter</button>
+                </div>
+                <div class="modal-tab-content active" id="resumeContent">
+                    <div class="document-content" id="resumeText">Loading...</div>
+                </div>
+                <div class="modal-tab-content" id="coverContent">
+                    <div class="document-content" id="coverText">Loading...</div>
+                </div>
             </div>
         </div>
     </div>
@@ -805,9 +946,62 @@
             }
         }
 
-        function viewDetails(folder) {
-            alert('Application details view coming soon!\n\nFolder: ' + folder);
+        async function viewDetails(folder) {
+            try {
+                const response = await fetch(`/api/application/${folder}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    alert('Error loading application: ' + data.error);
+                    return;
+                }
+
+                document.getElementById('modalTitle').textContent = data.info.job_title;
+                document.getElementById('resumeText').textContent = data.resume || 'No resume available';
+                document.getElementById('coverText').textContent = data.cover_letter || 'No cover letter available';
+
+                document.getElementById('applicationModal').classList.add('active');
+            } catch (error) {
+                alert('Error loading application details: ' + error);
+            }
         }
+
+        function closeModal() {
+            document.getElementById('applicationModal').classList.remove('active');
+        }
+
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.modal-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Update tab content
+            document.querySelectorAll('.modal-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            if (tab === 'resume') {
+                document.getElementById('resumeContent').classList.add('active');
+            } else {
+                document.getElementById('coverContent').classList.add('active');
+            }
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('applicationModal').addEventListener('click', (e) => {
+            if (e.target.id === 'applicationModal') {
+                closeModal();
+            }
+        });
 
         async function clearAllJobs() {
             if (!confirm('Are you sure you want to delete all saved jobs?\n\nThis action cannot be undone.')) {

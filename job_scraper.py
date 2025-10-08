@@ -167,6 +167,88 @@ class JobScraper:
         else:
             print("⚠️  No jobs to save")
 
+    def scrape_naukri(self, keywords="data scientist", location="Bangalore", country="india"):
+        """Scrape jobs from Naukri.com (India)"""
+        print(f"🔍 Scraping Naukri for {keywords} in {location}...")
+
+        # Naukri uses URL encoding for search
+        keywords_encoded = quote_plus(keywords)
+        location_encoded = quote_plus(location)
+
+        url = f"https://www.naukri.com/{keywords_encoded}-jobs-in-{location_encoded}"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Naukri job cards
+            job_cards = soup.find_all('article', class_='jobTuple')
+
+            for card in job_cards[:20]:
+                try:
+                    title_elem = card.find('a', class_='title')
+                    company_elem = card.find('a', class_='subTitle')
+                    location_elem = card.find('li', class_='location')
+                    link_elem = title_elem
+
+                    if title_elem:
+                        job = {
+                            'title': title_elem.text.strip(),
+                            'company': company_elem.text.strip() if company_elem else 'N/A',
+                            'location': location_elem.text.strip() if location_elem else location,
+                            'url': link_elem.get('href', ''),
+                            'source': 'Naukri',
+                            'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'applied': False
+                        }
+                        self.jobs.append(job)
+                except Exception as e:
+                    continue
+
+        except Exception as e:
+            print(f"❌ Error scraping Naukri: {e}")
+
+    def scrape_monster(self, keywords="data scientist", location="New York", country="usa"):
+        """Scrape jobs from Monster.com"""
+        print(f"🔍 Scraping Monster for {keywords} in {location}...")
+
+        # Monster search URL
+        keywords_encoded = quote_plus(keywords)
+        location_encoded = quote_plus(location)
+
+        url = f"https://www.monster.com/jobs/search?q={keywords_encoded}&where={location_encoded}"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Monster job cards
+            job_cards = soup.find_all('div', class_='job-cardstyle__InnerWrapper-sc')
+
+            for card in job_cards[:20]:
+                try:
+                    title_elem = card.find('h2', class_='job-cardstyle__JobCardTitle')
+                    company_elem = card.find('div', class_='job-cardstyle__CompanyNameWrapper')
+                    location_elem = card.find('div', class_='job-cardstyle__JobLocation')
+                    link_elem = card.find('a', class_='job-cardstyle__JobCardTitle')
+
+                    if title_elem:
+                        job = {
+                            'title': title_elem.text.strip(),
+                            'company': company_elem.text.strip() if company_elem else 'N/A',
+                            'location': location_elem.text.strip() if location_elem else location,
+                            'url': 'https://www.monster.com' + link_elem.get('href', '') if link_elem else '',
+                            'source': 'Monster',
+                            'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'applied': False
+                        }
+                        self.jobs.append(job)
+                except Exception as e:
+                    continue
+
+        except Exception as e:
+            print(f"❌ Error scraping Monster: {e}")
+
     def get_jobs(self):
         """Return all scraped jobs"""
         return self.jobs
