@@ -249,6 +249,125 @@ class JobScraper:
         except Exception as e:
             print(f"❌ Error scraping Monster: {e}")
 
+    def scrape_glassdoor(self, keywords="data scientist", location="New York", country="usa"):
+        """Scrape jobs from Glassdoor (USA)"""
+        print(f"🔍 Scraping Glassdoor for {keywords} in {location}...")
+
+        keywords_encoded = quote_plus(keywords)
+        location_encoded = quote_plus(location)
+
+        url = f"https://www.glassdoor.com/Job/jobs.htm?sc.keyword={keywords_encoded}&locT=C&locId=1132348&locKeyword={location_encoded}"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Glassdoor job cards
+            job_cards = soup.find_all('li', class_='react-job-listing')
+
+            for card in job_cards[:20]:
+                try:
+                    title_elem = card.find('a', class_='jobLink')
+                    company_elem = card.find('div', class_='employer-name')
+                    location_elem = card.find('div', class_='location')
+
+                    if title_elem:
+                        job = {
+                            'title': title_elem.text.strip(),
+                            'company': company_elem.text.strip() if company_elem else 'N/A',
+                            'location': location_elem.text.strip() if location_elem else location,
+                            'url': 'https://www.glassdoor.com' + title_elem.get('href', ''),
+                            'source': 'Glassdoor',
+                            'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'applied': False
+                        }
+                        self.jobs.append(job)
+                except Exception as e:
+                    continue
+
+        except Exception as e:
+            print(f"❌ Error scraping Glassdoor: {e}")
+
+    def scrape_reed(self, keywords="data scientist", location="London", country="uk"):
+        """Scrape jobs from Reed.co.uk (UK)"""
+        print(f"🔍 Scraping Reed for {keywords} in {location}...")
+
+        keywords_encoded = quote_plus(keywords)
+        location_encoded = quote_plus(location)
+
+        url = f"https://www.reed.co.uk/jobs/{keywords_encoded}-jobs-in-{location_encoded}"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # Reed job cards
+            job_cards = soup.find_all('article', class_='job-result')
+
+            for card in job_cards[:20]:
+                try:
+                    title_elem = card.find('h3', class_='job-result-heading__title')
+                    title_link = title_elem.find('a') if title_elem else None
+                    company_elem = card.find('a', class_='gtmJobListingPostedBy')
+                    location_elem = card.find('li', class_='job-metadata__item--location')
+
+                    if title_link:
+                        job = {
+                            'title': title_link.text.strip(),
+                            'company': company_elem.text.strip() if company_elem else 'N/A',
+                            'location': location_elem.text.strip() if location_elem else location,
+                            'url': 'https://www.reed.co.uk' + title_link.get('href', ''),
+                            'source': 'Reed',
+                            'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'applied': False
+                        }
+                        self.jobs.append(job)
+                except Exception as e:
+                    continue
+
+        except Exception as e:
+            print(f"❌ Error scraping Reed: {e}")
+
+    def scrape_totaljobs(self, keywords="data scientist", location="London", country="uk"):
+        """Scrape jobs from TotalJobs.com (UK)"""
+        print(f"🔍 Scraping TotalJobs for {keywords} in {location}...")
+
+        keywords_encoded = quote_plus(keywords)
+        location_encoded = quote_plus(location)
+
+        url = f"https://www.totaljobs.com/jobs/{keywords_encoded}/in-{location_encoded}"
+
+        try:
+            response = requests.get(url, headers=self.headers, timeout=10)
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            # TotalJobs job cards
+            job_cards = soup.find_all('div', class_='job')
+
+            for card in job_cards[:20]:
+                try:
+                    title_elem = card.find('h2', class_='job-title')
+                    title_link = title_elem.find('a') if title_elem else None
+                    company_elem = card.find('a', class_='company')
+                    location_elem = card.find('li', class_='location')
+
+                    if title_link:
+                        job = {
+                            'title': title_link.text.strip(),
+                            'company': company_elem.text.strip() if company_elem else 'N/A',
+                            'location': location_elem.text.strip() if location_elem else location,
+                            'url': 'https://www.totaljobs.com' + title_link.get('href', ''),
+                            'source': 'TotalJobs',
+                            'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                            'applied': False
+                        }
+                        self.jobs.append(job)
+                except Exception as e:
+                    continue
+
+        except Exception as e:
+            print(f"❌ Error scraping TotalJobs: {e}")
+
     def get_jobs(self):
         """Return all scraped jobs"""
         return self.jobs

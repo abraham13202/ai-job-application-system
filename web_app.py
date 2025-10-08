@@ -285,7 +285,7 @@ def run_job_search(keywords, location, country, platforms, clear_old):
         tracker = ApplicationTracker()
 
         # Supported platforms
-        supported_platforms = {'seek', 'indeed', 'linkedin', 'naukri', 'monster'}
+        supported_platforms = {'seek', 'indeed', 'linkedin', 'naukri', 'monster', 'glassdoor', 'reed', 'totaljobs'}
         unsupported = [p for p in platforms if p not in supported_platforms]
 
         # Filter to only supported platforms
@@ -323,6 +323,15 @@ def run_job_search(keywords, location, country, platforms, clear_old):
                     elif platform == 'monster':
                         # Monster for USA and other countries
                         scraper.scrape_monster(keyword, location, country)
+                    elif platform == 'glassdoor':
+                        # Glassdoor for USA
+                        scraper.scrape_glassdoor(keyword, location, country)
+                    elif platform == 'reed':
+                        # Reed for UK
+                        scraper.scrape_reed(keyword, location, country)
+                    elif platform == 'totaljobs':
+                        # TotalJobs for UK
+                        scraper.scrape_totaljobs(keyword, location, country)
                     time.sleep(2)  # Be respectful with requests
                 except Exception as e:
                     print(f"Error scraping {platform}: {e}")
