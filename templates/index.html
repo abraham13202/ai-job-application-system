@@ -3,351 +3,591 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Application System</title>
+    <title>Job Application Manager - AI-Powered Career Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --primary-light: #3b82f6;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-tertiary: #f1f5f9;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
-        .container { max-width: 1400px; margin: 0 auto; }
-
-        header {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow-lg);
         }
 
-        header h1 { color: #667eea; margin-bottom: 10px; }
-        header p { color: #666; }
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
 
-        /* Job Search Panel */
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            font-size: 1rem;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Card Component */
+        .card {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Search Panel */
         .search-panel {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
 
-        .search-panel h2 { color: #667eea; margin-bottom: 15px; font-size: 20px; }
-
-        .search-form { display: grid; gap: 15px; }
-
-        .form-row {
+        .form-grid {
             display: grid;
-            grid-template-columns: 120px 1fr;
-            gap: 10px;
-            align-items: start;
+            gap: 1.5rem;
         }
 
-        label { font-weight: 500; color: #333; padding-top: 8px; }
-
-        input[type="text"], textarea, select {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            width: 100%;
-        }
-
-        textarea {
-            min-height: 80px;
-            font-family: inherit;
-            resize: vertical;
-        }
-
-        .keywords-help {
-            grid-column: 2;
-            font-size: 12px;
-            color: #666;
-            margin-top: -10px;
-        }
-
-        .checkbox-group {
+        .form-group {
             display: flex;
-            gap: 20px;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .checkbox-group label {
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-primary);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: 'Inter', monospace;
+        }
+
+        .form-hint {
+            font-size: 0.8125rem;
+            color: var(--text-tertiary);
+            margin-top: -0.25rem;
+        }
+
+        /* Checkbox Group */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .checkbox-label {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-weight: normal;
-            padding-top: 0;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-primary);
         }
 
+        .checkbox-label:hover {
+            border-color: var(--primary);
+            background: var(--bg-tertiary);
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-label span {
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+
+        /* Buttons */
         .button-group {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
         }
 
-        button {
-            padding: 12px 24px;
+        .btn {
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 0.9375rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: inherit;
         }
 
         .btn-primary {
-            background: #667eea;
+            background: var(--primary);
             color: white;
         }
 
-        .btn-primary:hover { background: #5568d3; }
-        .btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
         }
 
-        .btn-secondary:hover { background: #e0e0e0; }
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--border);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         /* Progress Bar */
         .progress-container {
             display: none;
-            background: #f8f9fa;
-            padding: 20px;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
             border-radius: 8px;
-            margin-top: 15px;
+            border: 1px solid var(--border);
         }
 
-        .progress-container.active { display: block; }
+        .progress-container.active {
+            display: block;
+        }
 
         .progress-bar {
-            width: 100%;
-            height: 30px;
-            background: #e0e0e0;
-            border-radius: 15px;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 0.75rem;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            width: 0%;
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transition: width 0.3s ease;
+            border-radius: 4px;
         }
 
         .progress-message {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
-        /* Stats Cards */
-        .stats {
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
-        .stat-label { color: #999; font-size: 13px; margin-bottom: 5px; }
-        .stat-value { color: #667eea; font-size: 32px; font-weight: bold; }
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
 
         /* Jobs Grid */
-        .jobs-grid { display: grid; gap: 15px; }
+        .jobs-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
 
         .job-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
         }
 
         .job-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
-        .job-header {
+        .job-card-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .job-info-main {
+            flex: 1;
         }
 
         .job-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
         }
 
         .job-company {
-            color: #667eea;
+            font-size: 1rem;
+            color: var(--primary);
             font-weight: 500;
-            margin-bottom: 5px;
+            margin-bottom: 0.25rem;
         }
 
-        .job-location { color: #999; font-size: 14px; }
-
-        .job-info {
-            display: flex;
-            gap: 15px;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-
-        .info-tag {
-            background: #f0f0f0;
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: #666;
+        .job-location {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
         .priority-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .priority-high { background: #ffd700; color: #333; }
-        .priority-medium { background: #87ceeb; color: #333; }
-        .priority-low { background: #f0f0f0; color: #666; }
+        .priority-high {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .priority-medium {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .priority-low {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .job-tags {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .job-tag {
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
 
         .job-actions {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
         }
 
-        .job-actions button {
-            padding: 8px 16px;
-            font-size: 13px;
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
         }
 
+        /* Loading State */
         .loading {
             text-align: center;
-            padding: 40px;
-            color: white;
-            font-size: 18px;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="header-content">
+            <h1>Job Application Manager</h1>
+            <p>AI-powered tools to streamline your job search and application process</p>
+        </div>
+    </div>
+
     <div class="container">
-        <header>
-            <h1>🚀 AI Job Application System</h1>
-            <p>Find, tailor, and track your job applications all in one place</p>
-        </header>
-
-        <!-- Job Search Panel -->
-        <div class="search-panel">
-            <h2>🔍 Search for New Jobs</h2>
-            <div class="search-form">
-                <div class="form-row">
-                    <label>Keywords:</label>
-                    <textarea id="keywords" placeholder="Enter keywords, one per line:&#10;data scientist intern&#10;software engineer graduate&#10;junior analyst"></textarea>
-                </div>
-                <div class="keywords-help">
-                    💡 Enter each keyword on a new line. Examples: "data scientist graduate", "junior software engineer"
-                </div>
-
-                <div class="form-row">
-                    <label>Country:</label>
-                    <select id="country" onchange="updatePlatforms()">
-                        <option value="australia">🇦🇺 Australia</option>
-                        <option value="usa">🇺🇸 United States</option>
-                        <option value="uk">🇬🇧 United Kingdom</option>
-                        <option value="india">🇮🇳 India</option>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label>Location:</label>
-                    <input type="text" id="location" value="Sydney" placeholder="e.g., Sydney, Melbourne, Brisbane">
-                </div>
-
-                <div class="form-row">
-                    <label>Platforms:</label>
-                    <div class="checkbox-group" id="platformsGroup">
-                        <label><input type="checkbox" class="platform-checkbox" data-platform="seek" checked> Seek</label>
-                        <label><input type="checkbox" class="platform-checkbox" data-platform="indeed" checked> Indeed</label>
-                        <label><input type="checkbox" class="platform-checkbox" data-platform="linkedin" checked> LinkedIn</label>
+        <!-- Search Panel -->
+        <div class="card search-panel">
+            <div class="card-header">
+                <h2 class="card-title">Search for Jobs</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Search Keywords</label>
+                        <textarea id="keywords" class="form-textarea" placeholder="Enter job titles or keywords (one per line)&#10;Example:&#10;Data Scientist&#10;Software Engineer&#10;Product Manager"></textarea>
+                        <p class="form-hint">Enter each search term on a new line for more targeted results</p>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <label>Options:</label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="clear-old"> Clear old jobs before searching</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select id="country" class="form-select" onchange="updatePlatforms()">
+                                <option value="australia">Australia</option>
+                                <option value="usa">United States</option>
+                                <option value="uk">United Kingdom</option>
+                                <option value="india">India</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                            <input type="text" id="location" class="form-input" value="Sydney" placeholder="City or region">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Job Platforms</label>
+                        <div class="checkbox-grid" id="platformsGroup">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="platform-checkbox" data-platform="seek" checked>
+                                <span>Seek</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="platform-checkbox" data-platform="indeed" checked>
+                                <span>Indeed</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="platform-checkbox" data-platform="linkedin" checked>
+                                <span>LinkedIn</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clear-old">
+                            <span>Clear previous results before searching</span>
+                        </label>
                     </div>
                 </div>
 
                 <div class="button-group">
-                    <button class="btn-primary" id="searchBtn" onclick="startSearch()">
-                        🔍 Search Jobs
+                    <button class="btn btn-primary" id="searchBtn" onclick="startSearch()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                        Search Jobs
                     </button>
-                    <button class="btn-secondary" onclick="location.reload()">
-                        🔄 Refresh Results
+                    <button class="btn btn-secondary" onclick="location.reload()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        Refresh
                     </button>
-                    <button class="btn-secondary" onclick="clearAllJobs()" style="background: #ff6b6b; color: white;">
-                        🗑️ Clear All Jobs
+                    <button class="btn btn-danger" onclick="clearAllJobs()">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                        </svg>
+                        Clear All Jobs
                     </button>
                 </div>
 
                 <div class="progress-container" id="progressContainer">
                     <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill">0%</div>
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
                     </div>
-                    <div class="progress-message" id="progressMessage">Starting search...</div>
+                    <div class="progress-message" id="progressMessage">Initializing search...</div>
                 </div>
             </div>
         </div>
 
         <!-- Stats -->
-        <div class="stats" id="stats">
+        <div class="stats-grid" id="stats">
             <div class="stat-card">
                 <div class="stat-label">Total Jobs</div>
-                <div class="stat-value" id="totalJobs">-</div>
+                <div class="stat-value" id="totalJobs">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">Ready to Apply</div>
-                <div class="stat-value" id="readyJobs">-</div>
+                <div class="stat-value" id="readyJobs">0</div>
             </div>
             <div class="stat-card">
                 <div class="stat-label">High Priority</div>
-                <div class="stat-value" id="highPriority">-</div>
+                <div class="stat-value" id="highPriority">0</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Avg Match</div>
-                <div class="stat-value" id="avgMatch">-</div>
+                <div class="stat-label">Avg Match Score</div>
+                <div class="stat-value" id="avgMatch">0%</div>
             </div>
         </div>
 
         <!-- Jobs Grid -->
         <div class="jobs-grid" id="jobsGrid">
-            <div class="loading">Loading jobs...</div>
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading jobs...</p>
+            </div>
         </div>
     </div>
 
@@ -377,11 +617,10 @@
                 { id: 'naukri', name: 'Naukri', default: true },
                 { id: 'linkedin', name: 'LinkedIn', default: true },
                 { id: 'indeed', name: 'Indeed', default: true },
-                { id: 'foundit', name: 'Foundit (Monster India)', default: false }
+                { id: 'foundit', name: 'Foundit', default: false }
             ]
         };
 
-        // Default locations by country
         const defaultLocations = {
             australia: 'Sydney',
             usa: 'New York',
@@ -394,16 +633,13 @@
             const platformsGroup = document.getElementById('platformsGroup');
             const platforms = countryPlatforms[country];
 
-            // Update location placeholder
             const locationInput = document.getElementById('location');
             locationInput.value = defaultLocations[country];
-            locationInput.placeholder = `e.g., ${defaultLocations[country]}`;
 
-            // Rebuild platform checkboxes
             platformsGroup.innerHTML = platforms.map(platform => `
-                <label>
+                <label class="checkbox-label">
                     <input type="checkbox" class="platform-checkbox" data-platform="${platform.id}" ${platform.default ? 'checked' : ''}>
-                    ${platform.name}
+                    <span>${platform.name}</span>
                 </label>
             `).join('');
         }
@@ -434,12 +670,13 @@
 
             const clearOld = document.getElementById('clear-old').checked;
 
-            // Disable button
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.disabled = true;
-            searchBtn.textContent = '⏳ Searching...';
+            searchBtn.innerHTML = `
+                <div class="loading-spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+                Searching...
+            `;
 
-            // Show progress
             document.getElementById('progressContainer').classList.add('active');
 
             try {
@@ -458,7 +695,6 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    // Start polling for status
                     searchInterval = setInterval(checkSearchStatus, 1000);
                 } else {
                     alert('Error: ' + result.error);
@@ -475,17 +711,14 @@
                 const response = await fetch('/api/search_status');
                 const status = await response.json();
 
-                // Update progress
                 document.getElementById('progressFill').style.width = status.progress + '%';
-                document.getElementById('progressFill').textContent = status.progress + '%';
                 document.getElementById('progressMessage').textContent = status.message;
 
-                // Check if complete
                 if (!status.running && status.progress === 100) {
                     clearInterval(searchInterval);
                     setTimeout(() => {
                         resetSearch();
-                        loadJobs();  // Reload jobs
+                        loadJobs();
                     }, 2000);
                 }
             } catch (error) {
@@ -496,7 +729,12 @@
         function resetSearch() {
             const searchBtn = document.getElementById('searchBtn');
             searchBtn.disabled = false;
-            searchBtn.textContent = '🔍 Search Jobs';
+            searchBtn.innerHTML = `
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                Search Jobs
+            `;
             document.getElementById('progressContainer').classList.remove('active');
             document.getElementById('progressFill').style.width = '0%';
         }
@@ -506,7 +744,6 @@
                 const response = await fetch('/api/applications');
                 const jobs = await response.json();
 
-                // Update stats
                 document.getElementById('totalJobs').textContent = jobs.length;
                 document.getElementById('readyJobs').textContent =
                     jobs.filter(j => j.status === 'Ready to Apply').length;
@@ -518,10 +755,13 @@
                     : 0;
                 document.getElementById('avgMatch').textContent = avgMatch + '%';
 
-                // Display jobs
                 const grid = document.getElementById('jobsGrid');
                 if (jobs.length === 0) {
-                    grid.innerHTML = '<div class="loading">No jobs found. Use the search panel above to find jobs!</div>';
+                    grid.innerHTML = `
+                        <div class="loading">
+                            <p>No jobs found. Use the search panel above to find opportunities!</p>
+                        </div>
+                    `;
                     return;
                 }
 
@@ -531,27 +771,27 @@
 
                     return `
                         <div class="job-card">
-                            <div class="job-header">
-                                <div>
+                            <div class="job-card-header">
+                                <div class="job-info-main">
                                     <div class="job-title">${job.job_title}</div>
                                     <div class="job-company">${job.company}</div>
                                     <div class="job-location">${job.location}</div>
                                 </div>
                                 <span class="priority-badge priority-${priorityClass}">
-                                    Priority: ${job.priority_score}
+                                    Priority ${job.priority_score}
                                 </span>
                             </div>
-                            <div class="job-info">
-                                <span class="info-tag">📊 ${job.skill_match} Match</span>
-                                <span class="info-tag">📍 ${job.source}</span>
-                                <span class="info-tag">📝 ${job.status}</span>
+                            <div class="job-tags">
+                                <span class="job-tag">Match: ${job.skill_match}</span>
+                                <span class="job-tag">Source: ${job.source}</span>
+                                <span class="job-tag">${job.status}</span>
                             </div>
                             <div class="job-actions">
-                                <button class="btn-primary" onclick="window.open('${job.url}', '_blank')">
-                                    View Job
+                                <button class="btn btn-primary btn-sm" onclick="window.open('${job.url}', '_blank')">
+                                    View Listing
                                 </button>
-                                <button class="btn-secondary" onclick="viewDetails('${job.folder}')">
-                                    View Resume & Cover Letter
+                                <button class="btn btn-secondary btn-sm" onclick="viewDetails('${job.folder}')">
+                                    View Application
                                 </button>
                             </div>
                         </div>
@@ -561,17 +801,16 @@
             } catch (error) {
                 console.error('Error loading jobs:', error);
                 document.getElementById('jobsGrid').innerHTML =
-                    '<div class="loading">Error loading jobs</div>';
+                    '<div class="loading"><p>Error loading jobs</p></div>';
             }
         }
 
         function viewDetails(folder) {
-            // TODO: Add modal to show resume and cover letter
-            alert('Details view coming soon! Check the folder: ' + folder);
+            alert('Application details view coming soon!\n\nFolder: ' + folder);
         }
 
         async function clearAllJobs() {
-            if (!confirm('Are you sure you want to delete all saved jobs? This cannot be undone.')) {
+            if (!confirm('Are you sure you want to delete all saved jobs?\n\nThis action cannot be undone.')) {
                 return;
             }
 
@@ -584,17 +823,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('✅ All jobs cleared successfully!');
-                    loadJobs();  // Reload to show empty state
+                    alert('All jobs cleared successfully!');
+                    loadJobs();
                 } else {
-                    alert('❌ Error: ' + result.error);
+                    alert('Error: ' + result.error);
                 }
             } catch (error) {
-                alert('❌ Error clearing jobs: ' + error);
+                alert('Error clearing jobs: ' + error);
             }
         }
 
-        // Load jobs on page load
         loadJobs();
     </script>
 </body>
