@@ -2,276 +2,470 @@
 
 **Automate your job search with AI-powered resume tailoring, cover letter generation, and application tracking.**
 
-> A comprehensive tool to help students and job seekers find opportunities, tailor applications, and track their progress across multiple job platforms.
+> A comprehensive tool to help students and job seekers worldwide find opportunities, tailor applications, and track their progress across multiple job platforms - all from a beautiful web interface!
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)]()
 
 ---
 
-## Features
+## ✨ Features
 
-### 1. Job Scraping
-- Scrapes jobs from **Seek**, **Indeed**, and **LinkedIn**
-- Filters by keywords and location
-- Saves results to JSON/CSV
+### 🔍 **Web-Based Job Search** (NEW!)
+- **No coding required!** Search for jobs directly from your browser
+- Enter keywords, select platforms, and watch the magic happen
+- Real-time progress tracking with live updates
+- Automatically generates tailored resumes and cover letters for each job
+- Works on **Seek, Indeed, and LinkedIn**
 
-### 2. Resume Tailoring
-- Analyzes job descriptions
-- Matches your skills with requirements
+### 🎯 **Intelligent Resume Tailoring**
+- Analyzes job descriptions automatically
+- Matches your skills with job requirements
+- Shows skill match percentage for each job
 - Prioritizes relevant experience and projects
-- Generates customized resume (JSON + TXT)
-- Shows skill match percentage
+- Generates both JSON and formatted text versions
 
-### 3. Cover Letter Generation
-- Creates tailored cover letters automatically
-- Highlights relevant experience
-- Matches job requirements
+### ✍️ **Smart Cover Letter Generation**
+- Creates personalized cover letters for each application
+- Highlights your relevant experience
 - Professional formatting
+- Matches company culture and role requirements
 
-### 4. Auto-Fill Applications
-- Uses Selenium to auto-fill forms
-- Supports LinkedIn Easy Apply, Seek, and generic forms
-- Uploads resume automatically
-- **Note**: You must review and submit manually
+### 📊 **Beautiful Web Dashboard**
+- Track all applications in one place
+- See statistics and analytics
+- Filter and sort jobs by priority
+- Export to CSV for spreadsheets
+- **No terminal or coding knowledge needed!**
 
-### 5. Application Tracking
-- Dashboard with statistics
-- Track application status
-- Follow-up reminders
-- Export to CSV
+### 🌐 **Chrome Extension** (Optional)
+- Save LinkedIn profiles manually
+- Quick-add recruiters and hiring managers
+- Track networking contacts
 
-## Setup
+---
 
-### 1. Install Dependencies
+## 📸 Screenshots
+
+![Web Dashboard](docs/screenshots/dashboard.png)
+*Beautiful web interface - no coding required!*
+
+---
+
+## 💻 Installation
+
+### Quick Start (Recommended)
+
+Choose your operating system:
+
+<details>
+<summary><b>🍎 macOS</b></summary>
 
 ```bash
-cd /Users/ABRAHAM/job_application_system
+# 1. Download the project
+# Click "Code" → "Download ZIP" on GitHub, then extract it
+# Or use git:
+git clone https://github.com/abraham13202/ai-job-application-system.git
+cd ai-job-application-system
+
+# 2. Run the setup script
+chmod +x setup.sh
+./setup.sh
+
+# 3. Start the web interface
+source venv/bin/activate
+python3 web_app.py
+
+# 4. Open your browser to http://localhost:5000
+```
+
+**Done!** 🎉 The web interface will open automatically.
+
+</details>
+
+<details>
+<summary><b>🪟 Windows</b></summary>
+
+```powershell
+# 1. Download the project
+# Click "Code" → "Download ZIP" on GitHub, then extract it
+# Or use git:
+git clone https://github.com/abraham13202/ai-job-application-system.git
+cd ai-job-application-system
+
+# 2. Create virtual environment
+python -m venv venv
+venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Edit your resume data
+# Open resume_data.json in Notepad and add your information
+
+# 5. Start the web interface
+python web_app.py
+
+# 6. Open your browser to http://localhost:5000
+```
+
+**Done!** 🎉
+
+</details>
+
+<details>
+<summary><b>🐧 Linux</b></summary>
+
+```bash
+# 1. Download the project
+git clone https://github.com/abraham13202/ai-job-application-system.git
+cd ai-job-application-system
+
+# 2. Run the setup script
+chmod +x setup.sh
+./setup.sh
+
+# 3. Start the web interface
+source venv/bin/activate
+python3 web_app.py
+
+# 4. Open your browser to http://localhost:5000
+```
+
+**Done!** 🎉
+
+</details>
+
+---
+
+## 🚀 How to Use
+
+### For Non-Technical Users (Easiest!)
+
+1. **Install** using the instructions above
+2. **Start the web app**: `python3 web_app.py` (or `python web_app.py` on Windows)
+3. **Open browser** to http://localhost:5000
+4. **Enter your job search keywords** in the search panel:
+   ```
+   data scientist intern
+   software engineer graduate
+   junior analyst
+   ```
+5. **Select platforms** (Seek, Indeed, LinkedIn)
+6. **Click "Search Jobs"**
+7. **Watch the progress bar** as it finds and processes jobs
+8. **View results** - all jobs sorted by priority with tailored resumes!
+
+**That's it!** No coding, no terminal commands, just a simple web interface.
+
+### For Developers (Advanced)
+
+<details>
+<summary>Click to expand advanced usage</summary>
+
+#### Command Line Interface
+
+```bash
+# Search for jobs
+python3 comprehensive_search.py
+
+# Interactive menu
+python3 main.py
+```
+
+#### Python API
+
+```python
+from job_scraper import JobScraper
+from resume_tailor import ResumeTailor
+
+# Search for jobs
+scraper = JobScraper()
+jobs = scraper.scrape_seek("data scientist", "Sydney")
+
+# Tailor resume
+tailor = ResumeTailor()
+result = tailor.generate_tailored_resume(
+    job_description="...",
+    job_title="Data Scientist",
+    company_name="Google"
+)
+```
+
+</details>
+
+---
+
+## ⚙️ Configuration
+
+### Step 1: Add Your Resume Information
+
+Edit `resume_data.json` with your details:
+
+```json
+{
+  "name": "Your Name",
+  "email": "your.email@example.com",
+  "location": "Sydney, Australia",
+
+  "education": [
+    {
+      "degree": "Bachelor of Computer Science",
+      "institution": "University of Sydney",
+      "graduation_date": "2024"
+    }
+  ],
+
+  "skills": [
+    "Python",
+    "Machine Learning",
+    "Data Analysis",
+    "SQL"
+  ],
+
+  "experience": [
+    {
+      "title": "Software Engineering Intern",
+      "company": "Tech Company",
+      "start_date": "Jun 2023",
+      "end_date": "Aug 2023",
+      "responsibilities": [
+        "Developed features using Python",
+        "Collaborated with team of 5 engineers"
+      ]
+    }
+  ]
+}
+```
+
+### Step 2: Customize Search (Optional)
+
+The web interface lets you customize:
+- **Keywords**: Enter any job titles you're looking for
+- **Location**: Change from Sydney to your city
+- **Platforms**: Select which job sites to search
+
+---
+
+## 🌍 Supported Countries & Job Platforms
+
+### Currently Configured
+- 🇦🇺 **Australia**: Seek, Indeed, LinkedIn
+- 🇺🇸 **USA**: Indeed, LinkedIn (add Glassdoor easily!)
+- 🇬🇧 **UK**: Indeed, LinkedIn (add Reed easily!)
+- 🇨🇦 **Canada**: Indeed, LinkedIn
+
+### Want Your Country?
+It's easy to add! Just update the location in the web interface. The scrapers work globally!
+
+---
+
+## 📱 Chrome Extension (Optional)
+
+For tracking LinkedIn contacts manually:
+
+1. Open Chrome → `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select the `chrome_extension` folder
+5. Visit LinkedIn profiles and click the extension icon to save contacts
+
+---
+
+## 🎓 Perfect for Students!
+
+### ✅ Why Students Love This Tool
+
+- **Save Time**: Instead of spending hours searching, let the tool find jobs for you
+- **Better Applications**: Tailored resumes match each job's requirements
+- **Stay Organized**: Track all applications in one dashboard
+- **Learn Faster**: See what skills employers are looking for
+- **No Coding**: Use the web interface - no programming knowledge needed!
+
+### 📚 Great for:
+- Computer Science students
+- Data Science students
+- Engineering students
+- Business students
+- Anyone looking for their first job!
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+**Ways to help:**
+- Add support for more job platforms
+- Improve resume tailoring algorithm
+- Add translations for other languages
+- Create video tutorials
+- Report bugs and suggest features
+
+---
+
+## ❓ FAQ
+
+<details>
+<summary><b>Do I need to know programming to use this?</b></summary>
+
+**No!** Just follow the installation instructions, start the web app, and use the browser interface. No coding required!
+
+</details>
+
+<details>
+<summary><b>Will this work on my computer?</b></summary>
+
+**Yes!** Works on Windows, macOS, and Linux. Just need Python 3.8 or higher.
+
+</details>
+
+<details>
+<summary><b>Is web scraping legal?</b></summary>
+
+For personal use, yes. Always check each website's Terms of Service and `robots.txt`. Be respectful with request rates. This tool is for personal job searching only.
+
+</details>
+
+<details>
+<summary><b>Will I get banned from LinkedIn?</b></summary>
+
+The tool doesn't automate LinkedIn actions. It only saves profiles you manually visit via the Chrome extension. No automation = no risk!
+
+</details>
+
+<details>
+<summary><b>How accurate is the skill matching?</b></summary>
+
+The algorithm analyzes keywords and calculates overlap between your skills and job requirements. It's quite accurate but always review the results yourself!
+
+</details>
+
+<details>
+<summary><b>Can I customize the resume and cover letter templates?</b></summary>
+
+Yes! Edit the template files in the `templates/` folder or modify the generation logic in `resume_tailor.py` and `cover_letter_generator.py`.
+
+</details>
+
+<details>
+<summary><b>Is my data safe?</b></summary>
+
+**100% yes!** Everything is stored locally on your computer. No data is sent to external servers. You control everything.
+
+</details>
+
+<details>
+<summary><b>Can I use this for non-technical jobs?</b></summary>
+
+Absolutely! Just update your `resume_data.json` with your experience and skills, then search for any type of job. Works for marketing, finance, nursing, teaching, etc.
+
+</details>
+
+---
+
+## 🛠️ Troubleshooting
+
+<details>
+<summary><b>Python not found</b></summary>
+
+**macOS/Linux:**
+```bash
+# Install Python 3.8+
+brew install python3  # macOS
+sudo apt install python3  # Linux
+```
+
+**Windows:**
+Download from [python.org](https://www.python.org/downloads/)
+
+</details>
+
+<details>
+<summary><b>Module not found errors</b></summary>
+
+Make sure you're in the virtual environment:
+
+```bash
+# macOS/Linux
+source venv/bin/activate
+
+# Windows
+venv\Scripts\activate
+
+# Then reinstall
 pip install -r requirements.txt
 ```
 
-### 2. Install Chrome WebDriver (for auto-fill)
+</details>
 
-```bash
-# macOS with Homebrew
-brew install chromedriver
+<details>
+<summary><b>Port 5000 already in use</b></summary>
 
-# Or download from: https://chromedriver.chromium.org/
-```
-
-### 3. Your Resume Data
-
-Your resume is already loaded in `resume_data.json`. Update it if needed.
-
-## Usage
-
-### Option 1: Interactive Mode
-
-```bash
-python main.py
-```
-
-Follow the menu to:
-1. Search and scrape jobs
-2. Apply to jobs
-3. View dashboard
-4. Export applications
-
-### Option 2: Individual Components
-
-#### Scrape Jobs
+Change the port in `web_app.py`:
 ```python
-from job_scraper import JobScraper
-
-scraper = JobScraper()
-scraper.scrape_seek("data scientist", "Sydney")
-scraper.scrape_indeed("data scientist", "Sydney NSW")
-scraper.save_to_json()
+app.run(debug=True, port=5001)  # Change to 5001 or any other port
 ```
 
-#### Tailor Resume
-```python
-from resume_tailor import ResumeTailor
+</details>
 
-tailor = ResumeTailor()
-job_description = "..." # Paste job description
+<details>
+<summary><b>No jobs found</b></summary>
 
-tailored = tailor.generate_tailored_resume(
-    job_description=job_description,
-    job_title="Data Scientist",
-    company_name="Google"
-)
-```
+- Try different keywords
+- Check your internet connection
+- Some job sites may block scraping (use VPN or try later)
+- LinkedIn requires login for most features
 
-#### Generate Cover Letter
-```python
-from cover_letter_generator import CoverLetterGenerator
-
-gen = CoverLetterGenerator()
-cover_letter = gen.generate_cover_letter(
-    job_description=job_description,
-    job_title="Data Scientist",
-    company_name="Google"
-)
-```
-
-#### Track Applications
-```python
-from application_tracker import ApplicationTracker
-
-tracker = ApplicationTracker()
-tracker.add_application(
-    job_title="Data Scientist",
-    company="Google",
-    job_url="https://...",
-    notes="Applied via referral"
-)
-
-tracker.display_dashboard()
-```
-
-#### Auto-Fill Application
-```python
-from auto_fill_application import ApplicationAutoFiller
-
-filler = ApplicationAutoFiller()
-filler.init_browser()
-filler.fill_generic_application("JOB_URL")
-# Review and submit manually
-filler.close()
-```
-
-### Option 3: Complete Workflow
-
-```python
-from main import JobApplicationSystem
-
-system = JobApplicationSystem()
-
-# 1. Search jobs
-system.run_full_workflow("data scientist", "Sydney")
-
-# 2. Apply to specific job
-job_description = "..." # Full job description
-system.apply_to_job(
-    job_title="Senior Data Scientist",
-    company_name="Atlassian",
-    job_description=job_description,
-    job_url="https://...",
-    auto_fill=True  # Optional
-)
-
-# 3. View dashboard
-system.show_dashboard()
-```
-
-## Files Generated
-
-- `jobs.json` - Scraped jobs
-- `jobs.csv` - Scraped jobs (CSV)
-- `tailored_resume_TIMESTAMP.json` - Tailored resume data
-- `tailored_resume_TIMESTAMP.txt` - Tailored resume (text)
-- `cover_letter_COMPANY_TIMESTAMP.txt` - Cover letter
-- `applications.json` - Application tracker database
-- `applications.csv` - Exported applications
-
-## Important Notes
-
-### ⚠️ Web Scraping
-- Job sites may block scraping or require login
-- LinkedIn heavily restricts scraping (consider using API)
-- Be respectful with request frequency
-- Some sites may require Selenium for dynamic content
-
-### 🤖 Auto-Fill
-- **Always review** before submitting
-- You are responsible for application accuracy
-- Some sites have anti-bot measures
-- Manual review ensures quality
-
-### 🔒 Privacy
-- Resume data is stored locally only
-- No data is sent to external servers
-- You control all submissions
-
-### ✅ Best Practices
-1. Review all generated content before use
-2. Customize cover letters further for important roles
-3. Track follow-ups and responses
-4. Update resume_data.json regularly
-5. Backup your applications.json
-
-## Workflow Example
-
-```bash
-# 1. Search for jobs
-python main.py
-# Select option 1, enter "data scientist" and "Sydney"
-
-# 2. Review scraped jobs
-cat jobs.json
-
-# 3. Apply to a job
-python main.py
-# Select option 2, provide job details
-
-# 4. Check generated files
-ls -la tailored_resume_*.txt
-ls -la cover_letter_*.txt
-
-# 5. View dashboard
-python main.py
-# Select option 3
-
-# 6. Export for spreadsheet
-python main.py
-# Select option 4
-```
-
-## Troubleshooting
-
-### ChromeDriver Issues
-```bash
-# Check Chrome version
-google-chrome --version
-
-# Install matching ChromeDriver version
-brew install chromedriver
-```
-
-### Scraping Blocked
-- Try with longer delays between requests
-- Use VPN or different IP
-- Consider using official APIs
-- Selenium may work better for some sites
-
-### Import Errors
-```bash
-pip install --upgrade -r requirements.txt
-```
-
-## Future Enhancements
-
-- [ ] LinkedIn API integration
-- [ ] Email notifications for responses
-- [ ] Interview scheduler
-- [ ] Salary tracker
-- [ ] Network analysis (who works where)
-- [ ] Job recommendation based on skills
-- [ ] Browser extension for one-click apply
-
-## License
-
-Personal use only. Respect terms of service for job sites.
-
-## Support
-
-For issues or questions:
-1. Check job site's robots.txt
-2. Verify ChromeDriver installation
-3. Update dependencies
-4. Review error messages
+</details>
 
 ---
 
-**Good luck with your job search! 🚀**
+## 📄 License
+
+MIT License - See [LICENSE](LICENSE)
+
+**TL;DR:** Free to use, modify, and share. Just keep the license notice.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with Python, Flask, BeautifulSoup, and Selenium
+- Created to help students worldwide find their dream jobs
+- Inspired by the struggles of job hunting during university
+
+---
+
+## 💖 Support
+
+If this tool helped you land a job, please:
+- ⭐ Star this repository
+- 📢 Share with other job seekers
+- 💬 Share your success story in [Discussions](https://github.com/abraham13202/ai-job-application-system/discussions)
+
+---
+
+## 📞 Get Help
+
+- **Issues**: [GitHub Issues](https://github.com/abraham13202/ai-job-application-system/issues)
+- **Questions**: [GitHub Discussions](https://github.com/abraham13202/ai-job-application-system/discussions)
+- **Email**: abraham.kuriakose@example.com
+
+---
+
+**Made with ❤️ for students worldwide**
+
+*Good luck with your job search! You've got this!* 🚀
+
+---
+
+## 🎯 Quick Links
+
+- [Installation](#-installation)
+- [How to Use](#-how-to-use)
+- [Configuration](#️-configuration)
+- [FAQ](#-faq)
+- [Contributing](CONTRIBUTING.md)
+- [License](LICENSE)

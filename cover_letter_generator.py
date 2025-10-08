@@ -6,6 +6,7 @@ Creates tailored cover letters based on job description and your experience
 import json
 from datetime import datetime
 import re
+import os
 
 class CoverLetterGenerator:
     def __init__(self, resume_data_path=None):
