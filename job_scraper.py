@@ -291,6 +291,8 @@ class JobScraper:
     def scrape_reed(self, keywords="data scientist", location="London", country="uk"):
         """Scrape jobs from Reed.co.uk (UK)"""
         print(f"🔍 Scraping Reed for {keywords} in {location}...")
+        print("⚠️  Note: Reed requires JavaScript. Results may be limited.")
+        print("    For best UK results, use Indeed UK instead.")
 
         keywords_encoded = quote_plus(keywords)
         location_encoded = quote_plus(location)
@@ -301,22 +303,32 @@ class JobScraper:
             response = requests.get(url, headers=self.headers, timeout=10)
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            # Reed job cards
+            # Try multiple possible selectors for Reed
             job_cards = soup.find_all('article', class_='job-result')
+            if not job_cards:
+                job_cards = soup.find_all('div', {'data-qa': 'job-card'})
+            if not job_cards:
+                job_cards = soup.find_all('article')
+
+            if not job_cards:
+                print(f"⚠️  No jobs found on Reed. Site may require JavaScript or has changed structure.")
+                return
 
             for card in job_cards[:20]:
                 try:
-                    title_elem = card.find('h3', class_='job-result-heading__title')
-                    title_link = title_elem.find('a') if title_elem else None
-                    company_elem = card.find('a', class_='gtmJobListingPostedBy')
-                    location_elem = card.find('li', class_='job-metadata__item--location')
+                    # Try different selectors
+                    title_elem = card.find('h3') or card.find('h2') or card.find('a', {'data-qa': 'job-card-title'})
+                    title_link = title_elem.find('a') if title_elem and title_elem.name != 'a' else title_elem
 
-                    if title_link:
+                    company_elem = card.find('a', class_='gtmJobListingPostedBy') or card.find('div', {'data-qa': 'company-name'})
+                    location_elem = card.find('li', class_='job-metadata__item--location') or card.find('span', {'data-qa': 'location'})
+
+                    if title_link and title_link.get('href'):
                         job = {
                             'title': title_link.text.strip(),
                             'company': company_elem.text.strip() if company_elem else 'N/A',
                             'location': location_elem.text.strip() if location_elem else location,
-                            'url': 'https://www.reed.co.uk' + title_link.get('href', ''),
+                            'url': 'https://www.reed.co.uk' + title_link.get('href', '') if not title_link.get('href', '').startswith('http') else title_link.get('href', ''),
                             'source': 'Reed',
                             'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             'applied': False
@@ -331,6 +343,8 @@ class JobScraper:
     def scrape_totaljobs(self, keywords="data scientist", location="London", country="uk"):
         """Scrape jobs from TotalJobs.com (UK)"""
         print(f"🔍 Scraping TotalJobs for {keywords} in {location}...")
+        print("⚠️  Note: TotalJobs requires JavaScript. Results may be limited.")
+        print("    For best UK results, use Indeed UK instead.")
 
         keywords_encoded = quote_plus(keywords)
         location_encoded = quote_plus(location)
@@ -341,22 +355,32 @@ class JobScraper:
             response = requests.get(url, headers=self.headers, timeout=10)
             soup = BeautifulSoup(response.content, 'html.parser')
 
-            # TotalJobs job cards
+            # Try multiple selectors for TotalJobs
             job_cards = soup.find_all('div', class_='job')
+            if not job_cards:
+                job_cards = soup.find_all('article')
+            if not job_cards:
+                job_cards = soup.find_all('div', {'data-automation': 'job-item'})
+
+            if not job_cards:
+                print(f"⚠️  No jobs found on TotalJobs. Site may require JavaScript or has changed structure.")
+                return
 
             for card in job_cards[:20]:
                 try:
-                    title_elem = card.find('h2', class_='job-title')
-                    title_link = title_elem.find('a') if title_elem else None
-                    company_elem = card.find('a', class_='company')
-                    location_elem = card.find('li', class_='location')
+                    # Try different selectors
+                    title_elem = card.find('h2', class_='job-title') or card.find('h2') or card.find('a', {'data-automation': 'job-title'})
+                    title_link = title_elem.find('a') if title_elem and title_elem.name != 'a' else title_elem
 
-                    if title_link:
+                    company_elem = card.find('a', class_='company') or card.find('div', {'data-automation': 'company-name'})
+                    location_elem = card.find('li', class_='location') or card.find('span', {'data-automation': 'job-location'})
+
+                    if title_link and title_link.get('href'):
                         job = {
                             'title': title_link.text.strip(),
                             'company': company_elem.text.strip() if company_elem else 'N/A',
                             'location': location_elem.text.strip() if location_elem else location,
-                            'url': 'https://www.totaljobs.com' + title_link.get('href', ''),
+                            'url': 'https://www.totaljobs.com' + title_link.get('href', '') if not title_link.get('href', '').startswith('http') else title_link.get('href', ''),
                             'source': 'TotalJobs',
                             'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             'applied': False
