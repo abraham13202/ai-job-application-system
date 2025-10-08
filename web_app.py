@@ -287,15 +287,15 @@ def run_job_search(keywords, location, country, platforms, clear_old):
 
                 try:
                     if platform == 'seek':
-                        scraper.scrape_seek(keyword, location)
-                    elif platform == 'indeed':
-                        # Adjust location format based on country
+                        # Seek is Australia-only
                         if country == 'australia':
-                            scraper.scrape_indeed(keyword, f"{location} NSW")
-                        else:
-                            scraper.scrape_indeed(keyword, location)
+                            scraper.scrape_seek(keyword, location)
+                    elif platform == 'indeed':
+                        # Pass country to Indeed scraper
+                        scraper.scrape_indeed(keyword, location, country)
                     elif platform == 'linkedin':
-                        scraper.scrape_linkedin(keyword, location)
+                        # Pass country to LinkedIn scraper
+                        scraper.scrape_linkedin(keyword, location, country)
                     time.sleep(2)  # Be respectful with requests
                 except Exception as e:
                     print(f"Error scraping {platform}: {e}")

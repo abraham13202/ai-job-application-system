@@ -55,11 +55,20 @@ class JobScraper:
         except Exception as e:
             print(f"❌ Error scraping Seek: {e}")
 
-    def scrape_indeed(self, keywords="data scientist", location="Sydney NSW"):
-        """Scrape jobs from Indeed Australia"""
+    def scrape_indeed(self, keywords="data scientist", location="Sydney NSW", country="australia"):
+        """Scrape jobs from Indeed (country-specific)"""
         print(f"🔍 Scraping Indeed for {keywords} in {location}...")
 
-        url = f"https://au.indeed.com/jobs?q={quote_plus(keywords)}&l={quote_plus(location)}"
+        # Country-specific Indeed domains
+        indeed_domains = {
+            'australia': 'au.indeed.com',
+            'usa': 'www.indeed.com',
+            'uk': 'uk.indeed.com',
+            'india': 'in.indeed.com'
+        }
+
+        domain = indeed_domains.get(country, 'www.indeed.com')
+        url = f"https://{domain}/jobs?q={quote_plus(keywords)}&l={quote_plus(location)}"
 
         try:
             response = requests.get(url, headers=self.headers, timeout=10)
@@ -80,7 +89,7 @@ class JobScraper:
                             'title': title_elem.text.strip(),
                             'company': company_elem.text.strip() if company_elem else 'N/A',
                             'location': location_elem.text.strip() if location_elem else location,
-                            'url': 'https://au.indeed.com' + link_elem.get('href', '') if link_elem else '',
+                            'url': f'https://{domain}' + link_elem.get('href', '') if link_elem else '',
                             'source': 'Indeed',
                             'date_scraped': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                             'applied': False
@@ -92,11 +101,19 @@ class JobScraper:
         except Exception as e:
             print(f"❌ Error scraping Indeed: {e}")
 
-    def scrape_linkedin(self, keywords="data scientist", location="Sydney"):
+    def scrape_linkedin(self, keywords="data scientist", location="Sydney", country="australia"):
         """Scrape jobs from LinkedIn (Note: LinkedIn heavily restricts scraping)"""
         print(f"🔍 Scraping LinkedIn for {keywords} in {location}...")
         print("⚠️  Note: LinkedIn requires authentication and may block scraping.")
         print("    Consider using LinkedIn's official API or Selenium with login.")
+
+        # LinkedIn location codes by country (these are approximate)
+        location_codes = {
+            'australia': '101452733',  # Australia
+            'usa': '103644278',        # United States
+            'uk': '101165590',         # United Kingdom
+            'india': '102713980'       # India
+        }
 
         # LinkedIn Jobs URL
         url = f"https://www.linkedin.com/jobs/search/?keywords={quote_plus(keywords)}&location={quote_plus(location)}"
