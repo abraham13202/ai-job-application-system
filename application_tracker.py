@@ -9,7 +9,11 @@ from datetime import datetime
 import os
 
 class ApplicationTracker:
-    def __init__(self, db_path='/Users/ABRAHAM/job_application_system/applications.json'):
+    def __init__(self, db_path=None):
+        """Initialize tracker"""
+        if db_path is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            db_path = os.path.join(base_dir, 'applications.json')
         """Initialize tracker with database"""
         self.db_path = db_path
 
@@ -124,7 +128,11 @@ class ApplicationTracker:
         ]
         return results
 
-    def export_to_csv(self, filename='/Users/ABRAHAM/job_application_system/applications.csv'):
+    def export_to_csv(self, filename=None):
+        """Export applications to CSV"""
+        if filename is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            filename = os.path.join(base_dir, 'applications.csv')
         """Export applications to CSV"""
         if self.applications:
             df = pd.DataFrame(self.applications)

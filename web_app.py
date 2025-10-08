@@ -6,10 +6,23 @@ Flask web application for managing job applications
 from flask import Flask, render_template, jsonify, request, send_file
 import json
 import os
+import threading
+import time
 from application_tracker import ApplicationTracker
 from resume_tailor import ResumeTailor
 from cover_letter_generator import CoverLetterGenerator
 from job_scraper import JobScraper
+
+# Base directory - use current working directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Global variable to track search status
+search_status = {
+    'running': False,
+    'progress': 0,
+    'message': '',
+    'total_jobs': 0
+}
 
 app = Flask(__name__)
 
@@ -32,8 +45,8 @@ def get_applications():
 
     # Load application info from both batch folders
     batch_dirs = [
-        '/Users/ABRAHAM/job_application_system/applications_batch',
-        '/Users/ABRAHAM/job_application_system/applications_comprehensive'
+        os.path.join(BASE_DIR, 'applications_batch'),
+        os.path.join(BASE_DIR, 'applications_comprehensive')
     ]
     applications = []
 
@@ -87,8 +100,7 @@ def calculate_priority_score(job):
 @app.route('/api/application/<path:company_folder>')
 def get_application_details(company_folder):
     """Get details for a specific application"""
-    base_dir = '/Users/ABRAHAM/job_application_system'
-    folder_path = os.path.join(base_dir, company_folder)
+    folder_path = os.path.join(BASE_DIR, company_folder)
 
     if not os.path.exists(folder_path):
         return jsonify({'error': 'Application not found'}), 404
@@ -121,8 +133,7 @@ def get_application_details(company_folder):
 @app.route('/api/download/<path:company_folder>/<file_type>')
 def download_file(company_folder, file_type):
     """Download resume or cover letter"""
-    base_dir = '/Users/ABRAHAM/job_application_system'
-    folder_path = os.path.join(base_dir, company_folder)
+    folder_path = os.path.join(BASE_DIR, company_folder)
 
     if file_type == 'resume':
         files = [f for f in os.listdir(folder_path) if f.startswith('resume_') and f.endswith('.txt')]
@@ -139,7 +150,7 @@ def download_file(company_folder, file_type):
 @app.route('/api/jobs')
 def get_jobs():
     """Get scraped jobs"""
-    jobs_file = '/Users/ABRAHAM/job_application_system/jobs.json'
+    jobs_file = os.path.join(BASE_DIR, 'jobs.json')
     if os.path.exists(jobs_file):
         with open(jobs_file, 'r') as f:
             jobs = json.load(f)
@@ -169,8 +180,8 @@ def mark_applied():
 
     # Update the application_info.json file
     batch_dirs = [
-        '/Users/ABRAHAM/job_application_system/applications_batch',
-        '/Users/ABRAHAM/job_application_system/applications_comprehensive'
+        os.path.join(BASE_DIR, 'applications_batch'),
+        os.path.join(BASE_DIR, 'applications_comprehensive')
     ]
 
     for batch_dir in batch_dirs:
@@ -194,6 +205,192 @@ def mark_applied():
                             return jsonify({'success': True})
 
     return jsonify({'success': False, 'error': 'Application not found'}), 404
+
+@app.route('/api/search_jobs', methods=['POST'])
+def search_jobs():
+    """Trigger new job search"""
+    global search_status
+
+    if search_status['running']:
+        return jsonify({'error': 'Search already in progress'}), 400
+
+    data = request.json
+    keywords = data.get('keywords', [])
+    location = data.get('location', 'Sydney')
+    platforms = data.get('platforms', ['seek', 'indeed', 'linkedin'])
+    clear_old = data.get('clear_old', False)
+
+    if not keywords:
+        return jsonify({'error': 'Please provide at least one keyword'}), 400
+
+    # Start search in background thread
+    thread = threading.Thread(target=run_job_search, args=(keywords, location, platforms, clear_old))
+    thread.daemon = True
+    thread.start()
+
+    return jsonify({'success': True, 'message': 'Job search started'})
+
+@app.route('/api/search_status')
+def get_search_status():
+    """Get current search status"""
+    return jsonify(search_status)
+
+def run_job_search(keywords, location, platforms, clear_old):
+    """Run job search in background"""
+    global search_status
+
+    try:
+        search_status['running'] = True
+        search_status['progress'] = 0
+        search_status['message'] = 'Initializing search...'
+        search_status['total_jobs'] = 0
+
+        # Clear old jobs if requested
+        if clear_old:
+            search_status['message'] = 'Clearing old jobs...'
+            import shutil
+            comp_dir = os.path.join(BASE_DIR, 'applications_comprehensive')
+            if os.path.exists(comp_dir):
+                for item in os.listdir(comp_dir):
+                    item_path = os.path.join(comp_dir, item)
+                    if os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+
+        # Initialize scraper
+        scraper = JobScraper()
+        tailor = ResumeTailor()
+        cover_gen = CoverLetterGenerator()
+        tracker = ApplicationTracker()
+
+        total_searches = len(keywords) * len(platforms)
+        current_search = 0
+
+        # Search each keyword on each platform
+        for keyword in keywords:
+            for platform in platforms:
+                current_search += 1
+                search_status['progress'] = int((current_search / total_searches) * 50)  # 50% for searching
+                search_status['message'] = f'Searching {platform} for "{keyword}"...'
+
+                try:
+                    if platform == 'seek':
+                        scraper.scrape_seek(keyword, location)
+                    elif platform == 'indeed':
+                        scraper.scrape_indeed(keyword, f"{location} NSW")
+                    elif platform == 'linkedin':
+                        scraper.scrape_linkedin(keyword, location)
+                    time.sleep(2)  # Be respectful with requests
+                except Exception as e:
+                    print(f"Error scraping {platform}: {e}")
+
+        # Get unique jobs
+        jobs = scraper.get_jobs()
+        unique_jobs = []
+        seen_urls = set()
+        for job in jobs:
+            if job['url'] not in seen_urls:
+                unique_jobs.append(job)
+                seen_urls.add(job['url'])
+
+        search_status['total_jobs'] = len(unique_jobs)
+        search_status['message'] = f'Found {len(unique_jobs)} jobs! Preparing applications...'
+
+        # Save jobs
+        scraper.jobs = unique_jobs
+        scraper.save_to_json(os.path.join(BASE_DIR, 'jobs_comprehensive.json'))
+        scraper.save_to_csv(os.path.join(BASE_DIR, 'jobs_comprehensive.csv'))
+
+        # Prepare applications
+        output_dir = os.path.join(BASE_DIR, 'applications_comprehensive')
+        os.makedirs(output_dir, exist_ok=True)
+
+        for i, job in enumerate(unique_jobs):
+            search_status['progress'] = 50 + int(((i + 1) / len(unique_jobs)) * 50)  # 50-100% for processing
+            search_status['message'] = f'Processing {i+1}/{len(unique_jobs)}: {job["title"]} at {job["company"]}'
+
+            try:
+                # Create company folder
+                company_folder = os.path.join(output_dir, f"{job['company'].replace('/', '_').replace('|', '_')}_{i+1}")
+                os.makedirs(company_folder, exist_ok=True)
+
+                # Create job description
+                job_desc = create_job_description(job)
+
+                # Tailor resume
+                tailored_resume = tailor.generate_tailored_resume(
+                    job_description=job_desc,
+                    job_title=job['title'],
+                    company_name=job['company'],
+                    output_format='text'
+                )
+
+                # Move files
+                import glob
+                latest_resume = max(glob.glob(os.path.join(BASE_DIR, 'tailored_resume_*.txt')),
+                                   key=os.path.getctime, default=None)
+                if latest_resume:
+                    os.rename(latest_resume, os.path.join(company_folder, f"resume_{job['company'].replace('/', '_')}.txt"))
+
+                latest_resume_json = max(glob.glob(os.path.join(BASE_DIR, 'tailored_resume_*.json')),
+                                        key=os.path.getctime, default=None)
+                if latest_resume_json:
+                    os.rename(latest_resume_json, os.path.join(company_folder, f"resume_{job['company'].replace('/', '_')}.json"))
+
+                # Generate cover letter
+                cover_letter = cover_gen.generate_cover_letter(
+                    job_description=job_desc,
+                    job_title=job['title'],
+                    company_name=job['company']
+                )
+
+                latest_cover = max(glob.glob(os.path.join(BASE_DIR, 'cover_letter_*.txt')),
+                                  key=os.path.getctime, default=None)
+                if latest_cover:
+                    os.rename(latest_cover, os.path.join(company_folder, f"cover_letter_{job['company'].replace('/', '_')}.txt"))
+
+                # Save application info
+                app_info = {
+                    'job_title': job['title'],
+                    'company': job['company'],
+                    'location': job['location'],
+                    'url': job['url'],
+                    'source': job['source'],
+                    'skill_match': f"{tailored_resume['skill_match_analysis']['match_percentage']:.1f}%",
+                    'matched_skills': tailored_resume['skill_match_analysis']['matched'],
+                    'status': 'Ready to Apply',
+                    'priority_score': calculate_priority_score({'job_title': job['title'], 'company': job['company']})
+                }
+
+                with open(os.path.join(company_folder, 'application_info.json'), 'w') as f:
+                    json.dump(app_info, f, indent=2)
+
+            except Exception as e:
+                print(f"Error processing {job['title']}: {e}")
+
+        search_status['progress'] = 100
+        search_status['message'] = f'Complete! Found and processed {len(unique_jobs)} jobs.'
+        time.sleep(3)  # Keep message visible
+
+    except Exception as e:
+        search_status['message'] = f'Error: {str(e)}'
+        print(f"Search error: {e}")
+    finally:
+        search_status['running'] = False
+
+def create_job_description(job):
+    """Create a generic job description based on title"""
+    title_lower = job['title'].lower()
+
+    if 'data scientist' in title_lower or 'data science' in title_lower:
+        return f"{job['title']} at {job['company']} - Data Science role requiring Python, ML, SQL skills"
+    elif 'data analyst' in title_lower:
+        return f"{job['title']} at {job['company']} - Data Analytics role requiring SQL, Python, Tableau"
+    elif 'java' in title_lower or 'software' in title_lower:
+        return f"{job['title']} at {job['company']} - Software Development role requiring Java, SQL, APIs"
+    elif 'machine learning' in title_lower or 'ml' in title_lower:
+        return f"{job['title']} at {job['company']} - ML/AI role requiring Python, TensorFlow, PyTorch"
+    else:
+        return f"{job['title']} at {job['company']} - Technical role requiring programming and problem-solving skills"
 
 if __name__ == '__main__':
     # Create templates directory if it doesn't exist

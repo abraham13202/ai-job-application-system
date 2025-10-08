@@ -8,7 +8,11 @@ from datetime import datetime
 import re
 
 class CoverLetterGenerator:
-    def __init__(self, resume_data_path='/Users/ABRAHAM/job_application_system/resume_data.json'):
+    def __init__(self, resume_data_path=None):
+        """Initialize with resume data"""
+        if resume_data_path is None:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            resume_data_path = os.path.join(base_dir, 'resume_data.json')
         """Initialize with resume data"""
         with open(resume_data_path, 'r') as f:
             self.data = json.load(f)
@@ -158,7 +162,8 @@ class CoverLetterGenerator:
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         # Clean company name for filename
         clean_company = company_name.replace(' ', '_').replace('/', '_').replace('|', '_')
-        filename = f"/Users/ABRAHAM/job_application_system/cover_letter_{clean_company}_{timestamp}.txt"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.join(base_dir, f"cover_letter_{clean_company}_{timestamp}.txt")
 
         with open(filename, 'w') as f:
             f.write(cover_letter)

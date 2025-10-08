@@ -10,7 +10,12 @@ from datetime import datetime
 import os
 
 class ResumeTailor:
-    def __init__(self, resume_data_path='/Users/ABRAHAM/job_application_system/resume_data.json'):
+    def __init__(self, resume_data_path=None):
+        """Initialize with resume data"""
+        if resume_data_path is None:
+            # Use path relative to this file
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            resume_data_path = os.path.join(base_dir, 'resume_data.json')
         """Initialize with resume data"""
         with open(resume_data_path, 'r') as f:
             self.data = json.load(f)
@@ -152,7 +157,8 @@ class ResumeTailor:
 
         # Save tailored version
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"/Users/ABRAHAM/job_application_system/tailored_resume_{timestamp}.json"
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.join(base_dir, f"tailored_resume_{timestamp}.json")
 
         with open(filename, 'w') as f:
             json.dump(tailored, f, indent=2)
@@ -161,7 +167,8 @@ class ResumeTailor:
 
         # Generate text version
         if output_format == 'text':
-            text_filename = f"/Users/ABRAHAM/job_application_system/tailored_resume_{timestamp}.txt"
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            text_filename = os.path.join(base_dir, f"tailored_resume_{timestamp}.txt")
             self._generate_text_resume(tailored, text_filename, job_title, company_name)
 
         return tailored
