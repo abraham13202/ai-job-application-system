@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 350px;
+            padding: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+        }
+
+        h2 {
+            color: #667eea;
+            margin: 0 0 15px 0;
+            font-size: 18px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status.ready {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status.filling {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .info {
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        .info-item label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .info-item span {
+            color: #333;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        button.secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .tip {
+            font-size: 12px;
+            color: #666;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .field-list {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .field-item {
+            padding: 4px 0;
+            color: #666;
+        }
+
+        .field-item.filled {
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <h2>🚀 Job Auto-Filler</h2>
+
+    <div class="status ready" id="status">
+        ✓ Ready to auto-fill
+    </div>
+
+    <div class="info">
+        <div class="info-item">
+            <label>Name:</label>
+            <span id="userName">Loading...</span>
+        </div>
+        <div class="info-item">
+            <label>Email:</label>
+            <span id="userEmail">Loading...</span>
+        </div>
+        <div class="info-item">
+            <label>Phone:</label>
+            <span id="userPhone">Loading...</span>
+        </div>
+    </div>
+
+    <button id="fillButton">✨ Auto-Fill This Page</button>
+    <button id="settingsButton" class="secondary">⚙️ Edit My Info</button>
+
+    <div class="field-list" id="fieldList" style="display: none;">
+        <strong>Fields found:</strong>
+        <div id="fieldsDetected"></div>
+    </div>
+
+    <div class="tip">
+        💡 <strong>Tip:</strong> Navigate to a job application page and click "Auto-Fill" to automatically populate your information.
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

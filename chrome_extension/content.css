@@ -1,0 +1,10 @@
+/* Styles for auto-filled fields */
+.auto-filled-field {
+    background-color: #e8f5e9 !important;
+    border: 2px solid #4caf50 !important;
+    transition: all 0.3s ease;
+}
+
+.auto-filled-field:focus {
+    background-color: white !important;
+}
