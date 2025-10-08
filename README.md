@@ -12,8 +12,8 @@
 
 ## ✨ Features
 
-### 🔍 **Web-Based Job Search** (NEW!)
-- **No coding required!** Search for jobs directly from your browser
+### 🔍 **Web-Based Job Search** 
+- Search for jobs directly from your browser
 - Enter keywords, select platforms, and watch the magic happen
 - Real-time progress tracking with live updates
 - Automatically generates tailored resumes and cover letters for each job
@@ -462,5 +462,6 @@ If this tool helped you land a job, please:
 - [FAQ](#-faq)
 - [Contributing](CONTRIBUTING.md)
 - [License](LICENSE)
+
 
 
