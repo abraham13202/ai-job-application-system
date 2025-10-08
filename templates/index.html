@@ -311,6 +311,9 @@
                     <button class="btn-secondary" onclick="location.reload()">
                         🔄 Refresh Results
                     </button>
+                    <button class="btn-secondary" onclick="clearAllJobs()" style="background: #ff6b6b; color: white;">
+                        🗑️ Clear All Jobs
+                    </button>
                 </div>
 
                 <div class="progress-container" id="progressContainer">
@@ -565,6 +568,30 @@
         function viewDetails(folder) {
             // TODO: Add modal to show resume and cover letter
             alert('Details view coming soon! Check the folder: ' + folder);
+        }
+
+        async function clearAllJobs() {
+            if (!confirm('Are you sure you want to delete all saved jobs? This cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/clear_jobs', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'}
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('✅ All jobs cleared successfully!');
+                    loadJobs();  // Reload to show empty state
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Error clearing jobs: ' + error);
+            }
         }
 
         // Load jobs on page load

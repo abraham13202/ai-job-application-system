@@ -236,6 +236,27 @@ def get_search_status():
     """Get current search status"""
     return jsonify(search_status)
 
+@app.route('/api/clear_jobs', methods=['POST'])
+def clear_jobs():
+    """Clear all saved jobs"""
+    try:
+        import shutil
+
+        # Clear both application folders
+        folders_to_clear = [
+            os.path.join(BASE_DIR, 'applications_batch'),
+            os.path.join(BASE_DIR, 'applications_comprehensive')
+        ]
+
+        for folder in folders_to_clear:
+            if os.path.exists(folder):
+                shutil.rmtree(folder)
+                os.makedirs(folder, exist_ok=True)
+
+        return jsonify({'success': True, 'message': 'All jobs cleared'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 def run_job_search(keywords, location, country, platforms, clear_old):
     """Run job search in background"""
     global search_status
