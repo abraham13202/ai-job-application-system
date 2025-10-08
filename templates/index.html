@@ -274,16 +274,26 @@
                 </div>
 
                 <div class="form-row">
+                    <label>Country:</label>
+                    <select id="country" onchange="updatePlatforms()">
+                        <option value="australia">🇦🇺 Australia</option>
+                        <option value="usa">🇺🇸 United States</option>
+                        <option value="uk">🇬🇧 United Kingdom</option>
+                        <option value="india">🇮🇳 India</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
                     <label>Location:</label>
                     <input type="text" id="location" value="Sydney" placeholder="e.g., Sydney, Melbourne, Brisbane">
                 </div>
 
                 <div class="form-row">
                     <label>Platforms:</label>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox" id="platform-seek" checked> Seek</label>
-                        <label><input type="checkbox" id="platform-indeed" checked> Indeed</label>
-                        <label><input type="checkbox" id="platform-linkedin" checked> LinkedIn</label>
+                    <div class="checkbox-group" id="platformsGroup">
+                        <label><input type="checkbox" class="platform-checkbox" data-platform="seek" checked> Seek</label>
+                        <label><input type="checkbox" class="platform-checkbox" data-platform="indeed" checked> Indeed</label>
+                        <label><input type="checkbox" class="platform-checkbox" data-platform="linkedin" checked> LinkedIn</label>
                     </div>
                 </div>
 
@@ -341,6 +351,60 @@
     <script>
         let searchInterval = null;
 
+        // Country-specific platforms
+        const countryPlatforms = {
+            australia: [
+                { id: 'seek', name: 'Seek', default: true },
+                { id: 'indeed', name: 'Indeed', default: true },
+                { id: 'linkedin', name: 'LinkedIn', default: true }
+            ],
+            usa: [
+                { id: 'indeed', name: 'Indeed', default: true },
+                { id: 'linkedin', name: 'LinkedIn', default: true },
+                { id: 'glassdoor', name: 'Glassdoor', default: false },
+                { id: 'monster', name: 'Monster', default: false }
+            ],
+            uk: [
+                { id: 'indeed', name: 'Indeed', default: true },
+                { id: 'linkedin', name: 'LinkedIn', default: true },
+                { id: 'reed', name: 'Reed', default: true },
+                { id: 'totaljobs', name: 'TotalJobs', default: false }
+            ],
+            india: [
+                { id: 'naukri', name: 'Naukri', default: true },
+                { id: 'linkedin', name: 'LinkedIn', default: true },
+                { id: 'indeed', name: 'Indeed', default: true },
+                { id: 'foundit', name: 'Foundit (Monster India)', default: false }
+            ]
+        };
+
+        // Default locations by country
+        const defaultLocations = {
+            australia: 'Sydney',
+            usa: 'New York',
+            uk: 'London',
+            india: 'Bangalore'
+        };
+
+        function updatePlatforms() {
+            const country = document.getElementById('country').value;
+            const platformsGroup = document.getElementById('platformsGroup');
+            const platforms = countryPlatforms[country];
+
+            // Update location placeholder
+            const locationInput = document.getElementById('location');
+            locationInput.value = defaultLocations[country];
+            locationInput.placeholder = `e.g., ${defaultLocations[country]}`;
+
+            // Rebuild platform checkboxes
+            platformsGroup.innerHTML = platforms.map(platform => `
+                <label>
+                    <input type="checkbox" class="platform-checkbox" data-platform="${platform.id}" ${platform.default ? 'checked' : ''}>
+                    ${platform.name}
+                </label>
+            `).join('');
+        }
+
         async function startSearch() {
             const keywords = document.getElementById('keywords').value
                 .split('\n')
@@ -353,10 +417,12 @@
             }
 
             const location = document.getElementById('location').value;
+            const country = document.getElementById('country').value;
+
             const platforms = [];
-            if (document.getElementById('platform-seek').checked) platforms.push('seek');
-            if (document.getElementById('platform-indeed').checked) platforms.push('indeed');
-            if (document.getElementById('platform-linkedin').checked) platforms.push('linkedin');
+            document.querySelectorAll('.platform-checkbox:checked').forEach(checkbox => {
+                platforms.push(checkbox.dataset.platform);
+            });
 
             if (platforms.length === 0) {
                 alert('Please select at least one platform');
@@ -380,6 +446,7 @@
                     body: JSON.stringify({
                         keywords,
                         location,
+                        country,
                         platforms,
                         clear_old: clearOld
                     })
