@@ -217,6 +217,7 @@ def search_jobs():
     data = request.json
     keywords = data.get('keywords', [])
     location = data.get('location', 'Sydney')
+    country = data.get('country', 'australia')
     platforms = data.get('platforms', ['seek', 'indeed', 'linkedin'])
     clear_old = data.get('clear_old', False)
 
@@ -224,7 +225,7 @@ def search_jobs():
         return jsonify({'error': 'Please provide at least one keyword'}), 400
 
     # Start search in background thread
-    thread = threading.Thread(target=run_job_search, args=(keywords, location, platforms, clear_old))
+    thread = threading.Thread(target=run_job_search, args=(keywords, location, country, platforms, clear_old))
     thread.daemon = True
     thread.start()
 
@@ -235,7 +236,7 @@ def get_search_status():
     """Get current search status"""
     return jsonify(search_status)
 
-def run_job_search(keywords, location, platforms, clear_old):
+def run_job_search(keywords, location, country, platforms, clear_old):
     """Run job search in background"""
     global search_status
 
@@ -262,21 +263,37 @@ def run_job_search(keywords, location, platforms, clear_old):
         cover_gen = CoverLetterGenerator()
         tracker = ApplicationTracker()
 
-        total_searches = len(keywords) * len(platforms)
+        # Supported platforms
+        supported_platforms = {'seek', 'indeed', 'linkedin'}
+        unsupported = [p for p in platforms if p not in supported_platforms]
+
+        # Filter to only supported platforms
+        supported = [p for p in platforms if p in supported_platforms]
+
+        total_searches = len(keywords) * len(supported)
         current_search = 0
+
+        # Show message about unsupported platforms
+        if unsupported:
+            search_status['message'] = f'Note: {", ".join(unsupported)} scrapers coming soon! Searching with: {", ".join(supported)}'
+            time.sleep(2)
 
         # Search each keyword on each platform
         for keyword in keywords:
-            for platform in platforms:
+            for platform in supported:
                 current_search += 1
                 search_status['progress'] = int((current_search / total_searches) * 50)  # 50% for searching
-                search_status['message'] = f'Searching {platform} for "{keyword}"...'
+                search_status['message'] = f'Searching {platform.title()} for "{keyword}"...'
 
                 try:
                     if platform == 'seek':
                         scraper.scrape_seek(keyword, location)
                     elif platform == 'indeed':
-                        scraper.scrape_indeed(keyword, f"{location} NSW")
+                        # Adjust location format based on country
+                        if country == 'australia':
+                            scraper.scrape_indeed(keyword, f"{location} NSW")
+                        else:
+                            scraper.scrape_indeed(keyword, location)
                     elif platform == 'linkedin':
                         scraper.scrape_linkedin(keyword, location)
                     time.sleep(2)  # Be respectful with requests
