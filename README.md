@@ -46,13 +46,6 @@
 
 ---
 
-## 📸 Screenshots
-
-![Web Dashboard](docs/screenshots/dashboard.png)
-*Beautiful web interface - no coding required!*
-
----
-
 ## 💻 Installation
 
 ### Quick Start (Recommended)
@@ -469,4 +462,5 @@ If this tool helped you land a job, please:
 - [FAQ](#-faq)
 - [Contributing](CONTRIBUTING.md)
 - [License](LICENSE)
+
 
